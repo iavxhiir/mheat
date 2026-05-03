@@ -1,0 +1,101 @@
+{
+  "title": "MHEAT — Overview",
+  "uid": "mheat-overview",
+  "description": "Service + scientific-pipeline health for the MHEAT FastAPI app.",
+  "tags": ["mheat", "edito", "marine-heatwave"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {"text": "default", "value": "default"}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request rate (per second, by route)",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "sum by(route) (rate(mheat_http_requests_total[5m]))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    },
+    {
+      "id": 2,
+      "title": "P95 request latency (by route)",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(mheat_http_request_duration_seconds_bucket[5m])))",
+          "legendFormat": "{{route}} p95"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    },
+    {
+      "id": 3,
+      "title": "Error rate (4xx + 5xx by route)",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 6},
+      "targets": [
+        {
+          "expr": "sum by(route) (rate(mheat_http_requests_total{status=~\"4..|5..\"}[5m]))",
+          "legendFormat": "{{route}}"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "reqps"}}
+    },
+    {
+      "id": 4,
+      "title": "MHW events detected — total",
+      "type": "stat",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 6},
+      "targets": [
+        {
+          "expr": "mheat_mhw_events_detected_total",
+          "legendFormat": "events"
+        }
+      ],
+      "options": {"colorMode": "value", "graphMode": "area"}
+    },
+    {
+      "id": 5,
+      "title": "Scientific pipeline — P95 duration per stage",
+      "type": "timeseries",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"x": 0, "y": 14, "w": 24, "h": 8},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(mheat_mhw_detect_duration_seconds_bucket[5m])))",
+          "legendFormat": "detect p95"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(mheat_mhw_cluster_duration_seconds_bucket[5m])))",
+          "legendFormat": "cluster p95"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(mheat_mhw_impact_duration_seconds_bucket[5m])))",
+          "legendFormat": "impact p95"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}}
+    }
+  ]
+}

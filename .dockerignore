@@ -1,0 +1,52 @@
+# Python / JS build noise
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/node_modules
+frontend/dist
+frontend/coverage
+backend/coverage.json
+backend/htmlcov
+
+# VCS / editor
+.git
+.github
+.gitignore
+.idea
+.vscode
+.editorconfig
+.pre-commit-config.yaml
+
+# Local envs
+.venv
+venv
+env
+.env
+.env.local
+
+# Data / runtime caches (never belong in an image)
+data
+cache
+out
+*.zarr
+*.parquet
+
+# Docs / tutorials / grant artefacts — reduce build context, speed up builds.
+# (The image doesn't need them at runtime; the GitHub repo keeps them.)
+docs
+tutorials
+DCE
+charts
+deploy
+scripts
+Makefile
+CHANGELOG.md
+CITATION.cff
+SECURITY.md
+.zenodo.json
+
+# Markdown noise — keep only the root README for image metadata.
+*.md
+!README.md

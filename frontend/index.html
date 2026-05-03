@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='54'>%F0%9F%8C%8A</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b121b" />
+
+    <!-- Primary description / SEO -->
+    <title>MHEAT — Mediterranean Marine Heatwave Dashboard</title>
+    <meta name="description" content="MHEAT is an open dashboard tracking marine heatwaves in the Mediterranean Sea — Hobday-2016 categories, Copernicus Marine SST, sectoral overlays for aquaculture, MPAs and seagrass. Built for the EDITO platform under EU FSTP funding." />
+    <meta name="keywords" content="marine heatwave, Mediterranean, Hobday, Copernicus, EDITO, sea surface temperature, MPA, aquaculture, seagrass, EMODnet, Natura 2000, OGC API, STAC" />
+    <meta name="author" content="MHEAT project (EDITO FSTP)" />
+    <link rel="canonical" href="https://mheat.edito.eu/" />
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MHEAT" />
+    <meta property="og:title" content="MHEAT — Mediterranean Marine Heatwave Dashboard" />
+    <meta property="og:description" content="Open dashboard tracking Mediterranean marine heatwaves with Copernicus Marine SST, Hobday-2016 categories, and sectoral impact overlays. Built for EDITO." />
+    <meta property="og:image" content="/screenshots/01_hero.png" />
+    <meta property="og:image:alt" content="MHEAT dashboard showing Mediterranean SST anomaly map and detected marine heatwave clusters." />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://mheat.edito.eu/" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="it_IT" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MHEAT — Mediterranean Marine Heatwave Dashboard" />
+    <meta name="twitter:description" content="Open dashboard tracking Mediterranean marine heatwaves — Copernicus Marine SST, Hobday-2016 categories, sectoral impact overlays. Built for EDITO." />
+    <meta name="twitter:image" content="/screenshots/01_hero.png" />
+    <meta name="twitter:image:alt" content="MHEAT dashboard showing Mediterranean SST anomaly map and detected marine heatwave clusters." />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

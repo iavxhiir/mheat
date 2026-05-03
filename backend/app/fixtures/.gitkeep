@@ -1,0 +1,5 @@
+# Sectoral overlay fallbacks live under ./overlays/. The directory is kept
+# in tree so the OverlayProvider can still serve aquaculture/MPA/seagrass
+# polygons when the public WFS endpoints are unreachable. There is no SST
+# fixture here — the SST cube is read from the on-disk Zarr cache populated
+# by the startup prefetch and lazy-fill from Copernicus Marine.

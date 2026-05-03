@@ -1,0 +1,223 @@
+{
+  "brand": {
+    "subtitle": "Mediterranean Marine Heatwaves"
+  },
+  "header": {
+    "loading": "loading...",
+    "share": "Share view",
+    "shareAria": "Copy a shareable link to the current view",
+    "shareTitle": "Copy link to current view",
+    "downloadCsv": "Download CSV",
+    "downloadCsvAria": "Download current event catalog as CSV",
+    "downloadCsvTitle": "Download current events as CSV",
+    "apiDocs": "API docs",
+    "apiDocsAria": "Open interactive API documentation in a new tab",
+    "selectedRegion": "Selected region",
+    "language": "Language",
+    "liveMode": "Live data — Copernicus Marine",
+    "liveModeTitle": "SST anomalies are computed from live Copernicus Marine observations.",
+    "climatologyMissingTitle": "No climatology artifact is present.",
+    "climatologyMissingHint": "Run scripts/bootstrap_climatology.py."
+  },
+  "timeline": {
+    "title": "Time window",
+    "start": "Start",
+    "end": "End"
+  },
+  "anomalyDate": {
+    "title": "Anomaly raster date",
+    "aria": "Date for the SST anomaly raster"
+  },
+  "category": {
+    "title": "Minimum category",
+    "aria": "Minimum Hobday category for displayed events",
+    "cat1": "I - Moderate",
+    "cat2": "II - Strong",
+    "cat3": "III - Severe",
+    "cat4": "IV - Extreme",
+    "cat5": "V - Super-Extreme",
+    "name1": "Moderate",
+    "name2": "Strong",
+    "name3": "Severe",
+    "name4": "Extreme",
+    "name5": "Super-Extreme",
+    "plain1": "Mild warming",
+    "plain2": "Significant warming",
+    "plain3": "Severe",
+    "plain4": "Extreme — mass mortality risk",
+    "plain5": "Unprecedented",
+    "plainShort1": "Mild",
+    "plainShort2": "Significant",
+    "plainShort3": "Severe",
+    "plainShort4": "Extreme",
+    "plainShort5": "Unprecedented"
+  },
+  "plainMode": {
+    "title": "Wording",
+    "label": "Plain English",
+    "ariaLabel": "Switch category labels between technical Hobday categories and plain-English wording",
+    "technicalDescription": "Showing technical Hobday categories (I-V).",
+    "plainDescription": "Showing plain-English impact wording.",
+    "technicalShort": "Technical",
+    "plainShort": "Plain"
+  },
+  "cbSafe": {
+    "title": "Accessibility",
+    "label": "Colour-blind safe palette",
+    "ariaLabel": "Switch the category colour ramp to an Okabe-Ito colour-blind-safe palette and add shape glyphs",
+    "onShort": "On",
+    "offShort": "Off",
+    "onDescription": "Using Okabe-Ito ramp + shape glyphs for category encoding.",
+    "offDescription": "Using default Hobday ramp (red-amber)."
+  },
+  "layers": {
+    "title": "Map layers",
+    "anomaly": "SST anomaly",
+    "aquaculture": "Aquaculture",
+    "mpa": "MPAs (Natura 2000)",
+    "seagrass": "Seagrass",
+    "loading": "loading…",
+    "loadingAria": "Loading layer data"
+  },
+  "stats": {
+    "eventsSingular": "event cluster in window",
+    "eventsPlural": "event clusters in window"
+  },
+  "status": {
+    "offline": "You are offline - showing cached data from {ts}",
+    "error": "Error",
+    "datesRequired": "Pick a start and end date — the API does not assume defaults.",
+    "climatologyMissing": "SST anomaly unavailable: climatology artifact missing on the server."
+  },
+  "toast": {
+    "linkCopied": "Link copied",
+    "copyFailed": "Copy failed - select URL manually",
+    "cmsUnavailable": "Could not reach Copernicus Marine. Showing cached data only — try again in a moment.",
+    "overlaysUnavailable": "Could not reach EMODnet / EEA overlay services. Sectoral layers may be incomplete — try again in a few seconds."
+  },
+  "timeSlider": {
+    "aria": "Anomaly date scrubber",
+    "scrubAria": "Drag to change the anomaly date",
+    "play": "Play",
+    "pause": "Pause",
+    "stepBack": "Previous day",
+    "stepFwd": "Next day"
+  },
+  "interop": {
+    "aria": "Open standards served by this dashboard",
+    "ogc": "OGC API",
+    "ogcTitle": "OGC API – Features 1.0 served at /api/ogcapi",
+    "stac": "STAC 1.0",
+    "stacTitle": "STAC 1.0 catalogue at /api/stac/collections",
+    "arco": "ARCO Zarr",
+    "arcoTitle": "Cloud-optimised analysis-ready data (Zarr)"
+  },
+  "anomalyLegend": {
+    "label": "SST anomaly (°C)"
+  },
+  "coach": {
+    "skip": "Skip tour",
+    "dismiss": "Dismiss",
+    "next": "Next",
+    "back": "Back",
+    "done": "Done",
+    "stepLabel": "Step {n} of {total}",
+    "step1Title": "This is the map",
+    "step1Body": "The Mediterranean basin shows live sea-surface-temperature anomalies — red is warmer than normal for this day of the year, blue is cooler. Drag, zoom, and use the time slider to scrub through history.",
+    "step2Title": "Click any bubble to learn about an event",
+    "step2Body": "Each colored bubble is a detected marine heatwave. Bigger and darker means more severe. Click one to see its dates, peak temperature, and sectoral impact (aquaculture, MPAs, seagrass).",
+    "step3Title": "Press ? for keyboard shortcuts",
+    "step3Body": "The keyboard help button (bottom-right of the map) lists every shortcut — including 1-4 to toggle layers, Space to play the time animation, and B to draw a bbox filter."
+  },
+  "keyboard": {
+    "help": "Keyboard shortcuts",
+    "playPause": "Play/pause anomaly animation",
+    "stepDay": "Step ±1 day",
+    "jumpEnds": "Jump to start/end",
+    "toggleAnomaly": "Toggle SST anomaly",
+    "toggleMpa": "Toggle MPAs",
+    "toggleSeagrass": "Toggle seagrass",
+    "toggleAqua": "Toggle aquaculture",
+    "bbox": "Draw bbox filter",
+    "home": "Reset map view",
+    "showEventList": "Show event list (visible)"
+  },
+  "eventList": {
+    "aria": "Marine heatwave events, sorted by peak intensity",
+    "itemAria": "{category} marine heatwave, {start} to {end}, peak +{peak} degrees Celsius above mean, click to focus",
+    "selectedAnnounce": "Selected: {category} marine heatwave, {start} to {end}, peak +{peak} degrees Celsius"
+  },
+  "footer": {
+    "data": "Data",
+    "method": "Method",
+    "standards": "Standards",
+    "docs": "Docs",
+    "about": "About this project",
+    "aboutAria": "Open the project information page"
+  },
+  "about": {
+    "title": "About MHEAT",
+    "back": "← Back to dashboard",
+    "tagline": "An open dashboard for Mediterranean marine heatwaves.",
+    "whatTitle": "What is MHEAT?",
+    "whatBody": "MHEAT detects, classifies and visualises marine heatwaves in the Mediterranean Sea. It applies the Hobday et al. 2016 algorithm to live Copernicus Marine sea-surface-temperature observations, then joins each event with sectoral overlays — aquaculture sites, Natura 2000 marine protected areas, and seagrass meadows — so anyone can see where the warming was, how severe it was, and what was inside it.",
+    "whoTitle": "Who is it for?",
+    "whoBody": "Marine biologists and oceanographers who need scientifically defensible event detection. Fisheries and aquaculture managers tracking damage to commercial farms. Marine Protected Area wardens and EU policy analysts measuring exposure of protected ecosystems. Climate scientists studying multi-decadal trends. Journalists and educators looking for clear, sourced numbers. NGOs and the curious public who want to understand the state of the sea.",
+    "dataTitle": "Where does the data come from?",
+    "dataBody": "Sea-surface temperature: Copernicus Marine Med-MFC reanalysis 1993-2019 plus the live near-real-time analysis. Aquaculture sites: EMODnet Human Activities (finfish farms). Marine Protected Areas: European Environment Agency Natura 2000 (Habitats + Birds Directives). Seagrass meadows: EMODnet Seabed Habitats (Posidonia + Cymodocea). Detection method: Hobday et al. 2016 — Frontiers in Marine Science. All sources are open and credited on every page.",
+    "grantTitle": "EDITO grant attribution",
+    "grantBody": "MHEAT is built under the EDITO FSTP (Financial Support to Third Parties) Call #1 of the European Digital Twin of the Ocean. It is designed to plug directly into the EDITO Datalab via STAC, OGC API, and ARCO Zarr, so users can move from this dashboard to a JupyterLab notebook in one click.",
+    "linksTitle": "Links",
+    "linkGithub": "GitHub repository",
+    "linkStac": "STAC catalogue",
+    "linkOgc": "OGC API – Features",
+    "linkDatalab": "Datalab tutorial notebook",
+    "linkApiDocs": "Interactive API documentation",
+    "techTitle": "Technical readiness",
+    "techBody": "TRL 7 — system prototype demonstrated in operational environment. Backend: Python + FastAPI + xarray + Zarr. Frontend: React + TypeScript + MapLibre. Standards surfaces: OGC API – Features 1.0, STAC 1.0, ARCO Zarr, GeoParquet, Prometheus metrics. Reproducibility: SHA-256 manifest of every derived artifact.",
+    "licenseTitle": "License",
+    "licenseBody": "Code: MIT license. Derived data: CC-BY 4.0. Source data: subject to the upstream licenses of Copernicus Marine, EMODnet and EEA Natura 2000 (all open)."
+  },
+  "eventPanel": {
+    "title": "Event details",
+    "emptyHint": "Click an MHW polygon to see details.",
+    "category": "Category",
+    "rowStart": "Start",
+    "rowEnd": "End",
+    "rowPeak": "Peak",
+    "rowDuration": "Duration",
+    "durationDays": "{n} days",
+    "rowPeakIntensity": "Peak intensity",
+    "rowMeanIntensity": "Mean intensity",
+    "rowCumulative": "Cumulative",
+    "rowCentroid": "Centroid",
+    "rowPixels": "Pixels",
+    "impactTitle": "Sectoral impact",
+    "impactAqua": "Aquaculture sites",
+    "impactMpa": "MPA area",
+    "impactSeagrass": "Seagrass area",
+    "sparklineTitle": "SST vs climatology",
+    "sparklineLoading": "loading series...",
+    "sparklineError": "Series unavailable: {err}"
+  },
+  "map": {
+    "opacity": "Opacity",
+    "basemap": "Toggle basemap (Light / Dark)",
+    "basemapDark": "Dark",
+    "basemapLight": "Light",
+    "home": "Reset map view to default extent",
+    "drawBbox": "Draw rectangular filter region",
+    "clearBbox": "Clear region filter",
+    "anomalyLegend": "SST anomaly colour scale",
+    "canvasAria": "Mediterranean marine heatwave map. Use arrow keys to pan, plus and minus to zoom. Tab forward to navigate the event list.",
+    "clustersOnScreen": "{n} clusters on screen",
+    "clustersSingular": "{n} cluster on screen",
+    "clustersPlural": "{n} clusters on screen",
+    "categoryBreakdown": "Category breakdown"
+  },
+  "legend": {
+    "title": "MHW category (Hobday 2018)",
+    "showAll": "Show all categories",
+    "clearAria": "Clear category filter"
+  }
+}

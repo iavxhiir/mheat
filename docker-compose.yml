@@ -1,0 +1,34 @@
+services:
+  mheat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mheat:latest
+    container_name: mheat
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Sensible defaults in case .env is missing — keep the service up in demo mode.
+      DEMO_MODE: ${DEMO_MODE:-true}
+      HOST: 0.0.0.0
+      PORT: 8000
+      CACHE_DIR: /data/cache
+      ZARR_STORE: /data/cache/sst.zarr
+      # Observability (opt-in). Both default to off so cold-start cost is zero.
+      METRICS_ENABLED: ${METRICS_ENABLED:-false}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+    volumes:
+      - mheat-cache:/data/cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  mheat-cache:

@@ -1,0 +1,81 @@
+{{- /*
+The CronJob is rendered only for live-mode installs. Demo installs
+(`live.enabled: false`, the default) skip it entirely so the EDITO judging
+path stays a one-shot zero-config story. `dailyUpdate.enabled` defaults to
+true so any live-mode install gets a daily refresh out of the box.
+*/}}
+{{- if and .Values.dailyUpdate.enabled .Values.live.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-daily-update
+  labels:
+    app.kubernetes.io/name: mheat
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: daily-update
+spec:
+  schedule: {{ .Values.dailyUpdate.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.dailyUpdate.successfulJobsHistoryLimit | default 3 }}
+  failedJobsHistoryLimit: {{ .Values.dailyUpdate.failedJobsHistoryLimit | default 5 }}
+  startingDeadlineSeconds: {{ .Values.dailyUpdate.startingDeadlineSeconds | default 3600 }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.dailyUpdate.backoffLimit | default 2 }}
+      activeDeadlineSeconds: {{ .Values.dailyUpdate.activeDeadlineSeconds | default 7200 }}
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: mheat
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/component: daily-update
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: updater
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["python", "/srv/app/scripts/update_daily.py"]
+              env:
+                {{- range $k, $v := .Values.env }}
+                - name: {{ $k }}
+                  value: {{ $v | quote }}
+                {{- end }}
+                # Force live mode for the CronJob even if the dashboard Deployment
+                # is still in demo mode for a cautious rollout.
+                - name: DEMO_MODE
+                  value: {{ .Values.dailyUpdate.demoMode | default "false" | quote }}
+                - name: COPERNICUSMARINE_SERVICE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.cmsSecret.name }}
+                      key: {{ .Values.cmsSecret.usernameKey }}
+                - name: COPERNICUSMARINE_SERVICE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.cmsSecret.name }}
+                      key: {{ .Values.cmsSecret.passwordKey }}
+              resources:
+                {{- toYaml .Values.dailyUpdate.resources | nindent 16 }}
+              volumeMounts:
+                - name: cache
+                  mountPath: {{ .Values.persistence.mountPath }}
+          volumes:
+            - name: cache
+              {{- if .Values.persistence.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ .Release.Name }}-cache
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

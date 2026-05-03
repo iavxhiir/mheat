@@ -1,0 +1,223 @@
+{
+  "brand": {
+    "subtitle": "Vagues de chaleur marines en Méditerranée"
+  },
+  "header": {
+    "loading": "chargement...",
+    "share": "Partager la vue",
+    "shareAria": "Copier un lien vers la vue actuelle",
+    "shareTitle": "Copier le lien vers la vue actuelle",
+    "downloadCsv": "Télécharger CSV",
+    "downloadCsvAria": "Télécharger le catalogue d'événements au format CSV",
+    "downloadCsvTitle": "Télécharger les événements actuels au format CSV",
+    "apiDocs": "Docs API",
+    "apiDocsAria": "Ouvrir la documentation API interactive dans un nouvel onglet",
+    "selectedRegion": "Région sélectionnée",
+    "language": "Langue",
+    "liveMode": "Données en direct — Copernicus Marine",
+    "liveModeTitle": "Les anomalies SST sont calculées à partir d'observations Copernicus Marine en direct.",
+    "climatologyMissingTitle": "Aucun artefact de climatologie n'est présent.",
+    "climatologyMissingHint": "Exécutez scripts/bootstrap_climatology.py."
+  },
+  "timeline": {
+    "title": "Fenêtre temporelle",
+    "start": "Début",
+    "end": "Fin"
+  },
+  "anomalyDate": {
+    "title": "Date du raster d'anomalie",
+    "aria": "Date pour le raster d'anomalie SST"
+  },
+  "category": {
+    "title": "Catégorie minimale",
+    "aria": "Catégorie Hobday minimale pour les événements affichés",
+    "cat1": "I - Modérée",
+    "cat2": "II - Forte",
+    "cat3": "III - Sévère",
+    "cat4": "IV - Extrême",
+    "cat5": "V - Super-Extrême",
+    "name1": "Modérée",
+    "name2": "Forte",
+    "name3": "Sévère",
+    "name4": "Extrême",
+    "name5": "Super-Extrême",
+    "plain1": "Réchauffement léger",
+    "plain2": "Réchauffement significatif",
+    "plain3": "Sévère",
+    "plain4": "Extrême — risque de mortalité massive",
+    "plain5": "Sans précédent",
+    "plainShort1": "Léger",
+    "plainShort2": "Significatif",
+    "plainShort3": "Sévère",
+    "plainShort4": "Extrême",
+    "plainShort5": "Sans précédent"
+  },
+  "plainMode": {
+    "title": "Formulation",
+    "label": "Langage simple",
+    "ariaLabel": "Basculer les libellés entre catégories techniques de Hobday et langage simple",
+    "technicalDescription": "Affichage des catégories techniques de Hobday (I-V).",
+    "plainDescription": "Affichage de l'impact en langage simple.",
+    "technicalShort": "Technique",
+    "plainShort": "Simple"
+  },
+  "cbSafe": {
+    "title": "Accessibilité",
+    "label": "Palette adaptée au daltonisme",
+    "ariaLabel": "Basculer la rampe de couleurs vers une palette Okabe-Ito adaptée au daltonisme avec glyphes de forme",
+    "onShort": "Activé",
+    "offShort": "Désactivé",
+    "onDescription": "Rampe Okabe-Ito + glyphes de forme pour le codage des catégories.",
+    "offDescription": "Rampe Hobday par défaut (rouge-ambre)."
+  },
+  "layers": {
+    "title": "Couches de la carte",
+    "anomaly": "Anomalie SST",
+    "aquaculture": "Aquaculture",
+    "mpa": "AMP (Natura 2000)",
+    "seagrass": "Herbiers marins",
+    "loading": "chargement…",
+    "loadingAria": "Chargement des données de la couche"
+  },
+  "stats": {
+    "eventsSingular": "groupe d'événements dans la fenêtre",
+    "eventsPlural": "groupes d'événements dans la fenêtre"
+  },
+  "status": {
+    "offline": "Vous êtes hors ligne - données en cache du {ts}",
+    "error": "Erreur",
+    "datesRequired": "Choisissez une date de début et de fin — l'API ne suppose pas de valeurs par défaut.",
+    "climatologyMissing": "Anomalie SST indisponible : artefact de climatologie manquant sur le serveur."
+  },
+  "toast": {
+    "linkCopied": "Lien copié",
+    "copyFailed": "Échec de la copie - sélectionner l'URL manuellement",
+    "cmsUnavailable": "Impossible de joindre Copernicus Marine. Affichage des données en cache uniquement — réessayez dans un instant.",
+    "overlaysUnavailable": "Impossible de joindre les services d'overlay EMODnet / EEA. Les couches sectorielles peuvent être incomplètes — réessayez dans quelques secondes."
+  },
+  "timeSlider": {
+    "aria": "Curseur de date d'anomalie",
+    "scrubAria": "Faites glisser pour changer la date d'anomalie",
+    "play": "Lecture",
+    "pause": "Pause",
+    "stepBack": "Jour précédent",
+    "stepFwd": "Jour suivant"
+  },
+  "interop": {
+    "aria": "Standards ouverts servis par ce tableau de bord",
+    "ogc": "OGC API",
+    "ogcTitle": "OGC API – Features 1.0 servi à /api/ogcapi",
+    "stac": "STAC 1.0",
+    "stacTitle": "Catalogue STAC 1.0 à /api/stac/collections",
+    "arco": "ARCO Zarr",
+    "arcoTitle": "Données analyse-ready cloud-optimisées (Zarr)"
+  },
+  "anomalyLegend": {
+    "label": "Anomalie SST (°C)"
+  },
+  "coach": {
+    "skip": "Passer la visite",
+    "dismiss": "Fermer",
+    "next": "Suivant",
+    "back": "Précédent",
+    "done": "Terminer",
+    "stepLabel": "Étape {n} sur {total}",
+    "step1Title": "Voici la carte",
+    "step1Body": "Le bassin méditerranéen affiche en direct les anomalies de température de surface — rouge si plus chaud que la normale pour ce jour de l'année, bleu si plus froid. Faites glisser, zoomez et utilisez le curseur temporel pour parcourir l'historique.",
+    "step2Title": "Cliquez sur une bulle pour explorer un événement",
+    "step2Body": "Chaque bulle colorée est une vague de chaleur marine détectée. Plus elle est grande et sombre, plus elle est sévère. Cliquez pour voir les dates, la température maximale et l'impact sectoriel (aquaculture, AMP, herbiers).",
+    "step3Title": "Appuyez sur ? pour les raccourcis clavier",
+    "step3Body": "Le bouton d'aide clavier (en bas à droite de la carte) liste tous les raccourcis — dont 1-4 pour les couches, Espace pour l'animation temporelle, et B pour tracer un filtre rectangulaire."
+  },
+  "keyboard": {
+    "help": "Raccourcis clavier",
+    "playPause": "Lecture/pause de l'animation",
+    "stepDay": "Avancer ±1 jour",
+    "jumpEnds": "Aller au début/fin",
+    "toggleAnomaly": "Anomalie SST",
+    "toggleMpa": "AMP",
+    "toggleSeagrass": "Herbiers",
+    "toggleAqua": "Aquaculture",
+    "bbox": "Tracer une emprise",
+    "home": "Réinitialiser la carte",
+    "showEventList": "Afficher la liste des événements (visible)"
+  },
+  "eventList": {
+    "aria": "Vagues de chaleur marines, triées par intensité maximale",
+    "itemAria": "Vague de chaleur marine {category}, du {start} au {end}, pic +{peak} degrés Celsius au-dessus de la moyenne, cliquez pour cibler",
+    "selectedAnnounce": "Sélectionné : vague de chaleur marine {category}, du {start} au {end}, pic +{peak} degrés Celsius"
+  },
+  "footer": {
+    "data": "Données",
+    "method": "Méthode",
+    "standards": "Standards",
+    "docs": "Docs",
+    "about": "À propos du projet",
+    "aboutAria": "Ouvrir la page d'information du projet"
+  },
+  "about": {
+    "title": "À propos de MHEAT",
+    "back": "← Retour au tableau de bord",
+    "tagline": "Un tableau de bord ouvert pour les vagues de chaleur marines en Méditerranée.",
+    "whatTitle": "Qu'est-ce que MHEAT ?",
+    "whatBody": "MHEAT détecte, classifie et visualise les vagues de chaleur marines en mer Méditerranée. Il applique l'algorithme de Hobday et al. 2016 aux observations en direct de température de surface de la mer fournies par Copernicus Marine, puis croise chaque événement avec des couches sectorielles — sites d'aquaculture, aires marines protégées Natura 2000 et herbiers de posidonie — afin que chacun puisse voir où le réchauffement a eu lieu, quelle était sa sévérité et ce qui se trouvait à l'intérieur.",
+    "whoTitle": "À qui s'adresse-t-il ?",
+    "whoBody": "Aux biologistes marins et océanographes qui ont besoin d'une détection d'événements scientifiquement défendable. Aux gestionnaires de la pêche et de l'aquaculture qui suivent les dommages causés aux exploitations commerciales. Aux gardiens d'aires marines protégées et aux analystes de politique de l'UE qui mesurent l'exposition des écosystèmes protégés. Aux climatologues qui étudient les tendances pluri-décennales. Aux journalistes et aux enseignants qui cherchent des chiffres clairs et sourcés. Aux ONG et au public curieux de comprendre l'état de la mer.",
+    "dataTitle": "D'où viennent les données ?",
+    "dataBody": "Température de surface : réanalyse Copernicus Marine Med-MFC 1993-2019 + l'analyse en temps quasi réel. Sites d'aquaculture : EMODnet Human Activities (élevages de poissons). Aires marines protégées : Agence européenne pour l'environnement, Natura 2000 (Directives Habitats + Oiseaux). Herbiers : EMODnet Seabed Habitats (Posidonia + Cymodocea). Méthode de détection : Hobday et al. 2016 — Frontiers in Marine Science. Toutes les sources sont ouvertes et créditées sur chaque page.",
+    "grantTitle": "Attribution de la subvention EDITO",
+    "grantBody": "MHEAT est développé dans le cadre de l'appel FSTP (Soutien Financier à des Tiers) #1 d'EDITO, le Jumeau Numérique Européen de l'Océan. Il est conçu pour s'intégrer directement au Datalab EDITO via STAC, OGC API et ARCO Zarr, afin que les utilisateurs puissent passer de ce tableau de bord à un carnet JupyterLab en un clic.",
+    "linksTitle": "Liens",
+    "linkGithub": "Dépôt GitHub",
+    "linkStac": "Catalogue STAC",
+    "linkOgc": "OGC API – Features",
+    "linkDatalab": "Notebook tutoriel Datalab",
+    "linkApiDocs": "Documentation API interactive",
+    "techTitle": "Maturité technique",
+    "techBody": "TRL 7 — prototype système démontré en environnement opérationnel. Backend : Python + FastAPI + xarray + Zarr. Frontend : React + TypeScript + MapLibre. Standards exposés : OGC API – Features 1.0, STAC 1.0, ARCO Zarr, GeoParquet, métriques Prometheus. Reproductibilité : manifeste SHA-256 de tous les artefacts dérivés.",
+    "licenseTitle": "Licence",
+    "licenseBody": "Code : licence MIT. Données dérivées : CC-BY 4.0. Données sources : soumises aux licences amont de Copernicus Marine, EMODnet et Natura 2000 de l'EEE (toutes ouvertes)."
+  },
+  "eventPanel": {
+    "title": "Détails de l'événement",
+    "emptyHint": "Cliquez sur un polygone MHW pour voir les détails.",
+    "category": "Catégorie",
+    "rowStart": "Début",
+    "rowEnd": "Fin",
+    "rowPeak": "Pic",
+    "rowDuration": "Durée",
+    "durationDays": "{n} jours",
+    "rowPeakIntensity": "Intensité maximale",
+    "rowMeanIntensity": "Intensité moyenne",
+    "rowCumulative": "Cumulée",
+    "rowCentroid": "Centroïde",
+    "rowPixels": "Pixels",
+    "impactTitle": "Impact sectoriel",
+    "impactAqua": "Sites d'aquaculture",
+    "impactMpa": "Surface AMP",
+    "impactSeagrass": "Surface herbiers",
+    "sparklineTitle": "SST vs climatologie",
+    "sparklineLoading": "chargement de la série...",
+    "sparklineError": "Série indisponible : {err}"
+  },
+  "map": {
+    "opacity": "Opacité",
+    "basemap": "Basculer le fond (Clair / Sombre)",
+    "basemapDark": "Sombre",
+    "basemapLight": "Clair",
+    "home": "Réinitialiser la vue",
+    "drawBbox": "Tracer une zone de filtrage rectangulaire",
+    "clearBbox": "Effacer la zone",
+    "anomalyLegend": "Échelle des anomalies SST",
+    "canvasAria": "Carte des vagues de chaleur marines de Méditerranée. Utilisez les flèches pour vous déplacer, plus et moins pour zoomer. Tabulez pour parcourir la liste des événements.",
+    "clustersOnScreen": "{n} groupes à l'écran",
+    "clustersSingular": "{n} groupe à l'écran",
+    "clustersPlural": "{n} groupes à l'écran",
+    "categoryBreakdown": "Répartition par catégorie"
+  },
+  "legend": {
+    "title": "Catégorie MHW (Hobday 2018)",
+    "showAll": "Afficher toutes les catégories",
+    "clearAria": "Effacer le filtre de catégorie"
+  }
+}

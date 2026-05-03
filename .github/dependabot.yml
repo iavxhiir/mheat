@@ -1,0 +1,75 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "python"]
+    groups:
+      observability:
+        patterns:
+          - "opentelemetry-*"
+          - "prometheus-client"
+      scientific-stack:
+        patterns:
+          - "numpy"
+          - "pandas"
+          - "scipy"
+          - "xarray"
+          - "dask"
+          - "zarr"
+          - "netCDF4"
+          - "rioxarray"
+          - "rasterio"
+          - "shapely"
+          - "pyproj"
+          - "geopandas"
+      fastapi-stack:
+        patterns:
+          - "fastapi"
+          - "starlette"
+          - "uvicorn"
+          - "pydantic"
+          - "pydantic-settings"
+      test-tools:
+        patterns:
+          - "pytest*"
+          - "ruff"
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "javascript"]
+    groups:
+      types:
+        patterns:
+          - "@types/*"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@testing-library/*"
+          - "jsdom"
+          - "@playwright/*"
+          - "@axe-core/*"
+      lint:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels: ["dependencies", "ci"]
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "docker"]

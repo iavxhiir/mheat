@@ -1,0 +1,66 @@
+fastapi==0.136.0
+uvicorn[standard]==0.30.6
+# Pin starlette >= 1.0.0 to clear CVE-2024-47874 / CVE-2025-54121 even when a
+# future fastapi version relaxes its lower bound.
+starlette>=1.0.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+python-dotenv==1.2.2
+httpx==0.27.2
+
+# Scientific stack
+numpy==1.26.4
+pandas==2.2.2
+xarray==2024.7.0
+netCDF4==1.7.1
+# copernicusmarine 2.x writes subset output as NetCDF via the h5netcdf engine,
+# which needs h5py at runtime. Keep netCDF4 for read fallback.
+h5netcdf==1.8.1
+h5py==3.16.0
+zarr==2.18.2
+# numcodecs 0.14+ removed `cbuffer_sizes`/`cbuffer_metainfo` — breaks zarr 2.18.
+# Pin to the last compatible release to keep the ARCO export script working.
+numcodecs==0.13.1
+# Required by geopandas.to_parquet / .read_parquet — geopandas declares it
+# as an extra rather than a hard dep, so we pin it explicitly.
+pyarrow==17.0.0
+dask==2024.8.1
+scipy==1.13.1
+# Pinned to a specific SHA — master is a moving target; this keeps the
+# reproducibility manifest in docs/reproducibility.md byte-identical across
+# clones. Bump this SHA, regenerate scripts/reproduce.py and update the
+# reference hashes in docs/reproducibility.md together in one commit.
+marineHeatWaves @ git+https://github.com/ecjoliver/marineHeatWaves.git@d7292bf08ade0af213fa760b0d7e4adfe5f52894
+copernicusmarine==2.0.1
+
+# Geospatial
+rioxarray==0.17.0
+rasterio==1.3.11
+shapely==2.0.6
+pyproj==3.6.1
+geopandas==1.1.2
+owslib==0.31.0
+
+# Plotting (for /api/anomaly PNG tiles)
+matplotlib==3.9.2
+Pillow==12.2.0
+
+# STAC
+pystac==1.10.1
+
+# Observability (optional — activated only when OTEL_EXPORTER_OTLP_ENDPOINT is set)
+opentelemetry-api==1.27.0
+opentelemetry-sdk==1.27.0
+opentelemetry-instrumentation-fastapi==0.48b0
+opentelemetry-instrumentation-httpx==0.48b0
+opentelemetry-exporter-otlp-proto-grpc==1.27.0
+
+# Prometheus metrics (activated via METRICS_ENABLED)
+prometheus-client==0.21.0
+
+# OIDC bearer-token validation (activated via OIDC_ISSUER)
+PyJWT[crypto]==2.12.1
+
+# Tests
+pytest==9.0.3
+pytest-asyncio==1.3.0

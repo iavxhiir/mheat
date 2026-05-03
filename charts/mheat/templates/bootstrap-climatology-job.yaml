@@ -1,0 +1,125 @@
+{{- if and .Values.live.enabled .Values.live.bootstrap.enabled }}
+# One-shot Job that populates the climatology PVC by running
+# `scripts/bootstrap_climatology.py`. Idempotent: the script's first action
+# is a `dry-run`-style check; the wrapping shell here also short-circuits if
+# the zarr's `.zmetadata` already exists, so re-applying the chart with
+# `live.bootstrap.enabled=true` after a successful run is a no-op.
+#
+# The PVC is mounted RW here (vs. RO on the Deployment) so the Job can
+# actually write into it. With accessMode=ReadOnlyMany this still works:
+# Kubernetes treats the RO/RW choice per Pod-mount, and the underlying
+# StorageClass either honours both modes or rejects the bootstrap Pod
+# scheduling (in which case bootstrap from a sidecar / one-off Pod with a
+# RW PVC variant — see chart README "Live mode").
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-bootstrap-climatology
+  labels:
+    app.kubernetes.io/name: mheat
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: bootstrap-climatology
+  annotations:
+    # Re-run the Job when its config materially changes (e.g. the operator
+    # widens the bbox). `helm.sh/hook-delete-policy` is intentionally NOT
+    # set so operators can inspect the completed Job's logs after the fact.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  backoffLimit: {{ .Values.live.bootstrap.backoffLimit | default 1 }}
+  activeDeadlineSeconds: {{ .Values.live.bootstrap.activeDeadlineSeconds | default 21600 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mheat
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: bootstrap-climatology
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: bootstrap
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Idempotent wrapper: skip if the zarr's consolidated metadata file
+          # already exists (zarr v2 writes `.zmetadata` last, so its presence
+          # is a reliable "bootstrap completed" signal).
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              if [ -f "{{ .Values.live.climatology.mountPath }}/.zmetadata" ]; then
+                echo "Climatology already present at {{ .Values.live.climatology.mountPath }}; nothing to do."
+                exit 0
+              fi
+              python /srv/app/scripts/bootstrap_climatology.py \
+                --clim-start "{{ .Values.live.bootstrap.clim_start }}" \
+                --clim-end "{{ .Values.live.bootstrap.clim_end }}" \
+                {{- with .Values.live.bootstrap.bbox }}
+                --bbox "{{ . }}" \
+                {{- end }}
+                --output "{{ .Values.live.climatology.mountPath }}" \
+                --cleanup-downloads
+          env:
+            {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            # Force live mode for the bootstrap; the script needs CMS access.
+            - name: DEMO_MODE
+              value: "false"
+            - name: CLIMATOLOGY_STORE
+              value: {{ .Values.live.climatology.mountPath | quote }}
+            {{- if .Values.live.bootstrap.bbox }}
+            - name: BBOX
+              value: {{ .Values.live.bootstrap.bbox | quote }}
+            {{- end }}
+          {{- if .Values.live.copernicusCredentialsSecret }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.live.copernicusCredentialsSecret }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.live.bootstrap.resources | nindent 12 }}
+          volumeMounts:
+            # Order matters: the climatology PVC is mounted as a sub-path
+            # under the cache mount, so the cache PVC must be mounted first
+            # so kubelet can overlay the climatology mount on top.
+            - name: cache
+              # Bootstrap script writes a multi-GB intermediate NetCDF to
+              # data/_bootstrap_cache/ relative to its CWD; mount the
+              # main cache PVC so we don't blow up emptyDir / pod ephemeral.
+              mountPath: {{ .Values.persistence.mountPath }}
+            - name: climatology
+              # RW here so the script can write the zarr; the Deployment
+              # mounts the same PVC RO at the same path.
+              mountPath: {{ .Values.live.climatology.mountPath }}
+      volumes:
+        - name: climatology
+          {{- if .Values.live.climatology.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-climatology
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: cache
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-cache
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

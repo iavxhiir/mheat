@@ -1,0 +1,23 @@
+{{- if and .Values.live.enabled .Values.live.climatology.pvc.enabled }}
+# Read-only(-after-bootstrap) PVC for the pre-computed Hobday climatology zarr.
+# The bootstrap Job mounts this RW once to populate it (see
+# templates/bootstrap-climatology-job.yaml); thereafter the Deployment mounts
+# it RO. Sized at 1 GiB by default (zarr is ~500 MB).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-climatology
+  labels:
+    app.kubernetes.io/name: mheat
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: climatology
+spec:
+  accessModes:
+    - {{ .Values.live.climatology.pvc.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.live.climatology.pvc.size }}
+  {{- if .Values.live.climatology.pvc.storageClass }}
+  storageClassName: {{ .Values.live.climatology.pvc.storageClass }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,30 @@
+# CODEOWNERS for MHEAT.
+#
+# Syntax: <pattern> <space> <owner(s)>. GitHub auto-requests review from
+# the owners when a PR touches matching files. Replace the placeholder
+# handles with your org before first use.
+
+# Default — everything needs a second pair of eyes.
+*                               @mheat-maintainers
+
+# Scientific core — stricter review for the Hobday detector + impact join.
+backend/app/mhw.py              @mheat-science
+backend/app/impact.py           @mheat-science
+backend/app/stac.py             @mheat-science
+backend/tests/test_mhw.py       @mheat-science
+backend/tests/test_impact.py    @mheat-science
+tutorials/                      @mheat-science docs/reproducibility.md          @mheat-science
+
+# Platform / deploy.
+Dockerfile                      @mheat-platform
+docker-compose.yml              @mheat-platform
+charts/                         @mheat-platform
+.github/                        @mheat-platform
+scripts/                        @mheat-platform
+
+# Frontend.
+frontend/                       @mheat-frontend
+
+# Security-sensitive.
+SECURITY.md                     @mheat-security
+.github/workflows/ci.yml        @mheat-platform @mheat-security

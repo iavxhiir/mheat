@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MHEAT screenshot index — Mediterranean Marine Heatwave Dashboard" />
+    <title>MHEAT — Screenshot index</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+             max-width: 960px; margin: 2em auto; padding: 0 1em; color: #1e2330; line-height: 1.5; }
+      h1 { border-bottom: 2px solid #1a73e8; padding-bottom: .25em; }
+      table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+      th, td { border: 1px solid #d8dee4; padding: .5em .75em; vertical-align: top; }
+      th { background: #f5f7fa; text-align: left; }
+      code { background: #f5f7fa; padding: 1px 4px; border-radius: 3px; font-size: 90%; }
+      .missing { color: #888; font-style: italic; }
+    </style>
+  </head>
+  <body>
+    <h1>MHEAT — Screenshot index</h1>
+    <p>The eight reviewer-facing screenshots referenced from
+       <a href="../../README.md">README.md</a> and
+       <a href="../../docs/screenshots/README.md">docs/screenshots/README.md</a>.
+       See the shot-list in <code>docs/screenshots/README.md</code> for capture
+       guidance.</p>
+    <table>
+      <thead>
+        <tr><th>#</th><th>File</th><th>What it shows</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>01_hero.png</code></td><td>Dashboard with July 2022 Mediterranean MHW — 12 events, 3 at Category &ge; IV.</td></tr>
+        <tr><td>2</td><td><code>02_event_panel.png</code></td><td>Drill-down over peak pixel: Hobday 2016 signature, SST vs climatology vs threshold.</td></tr>
+        <tr><td>3</td><td><code>03_overlays.png</code></td><td>Aquaculture, Natura 2000 MPA and seagrass overlays in the Adriatic.</td></tr>
+        <tr><td>4</td><td><code>04_bbox_filter.png</code></td><td>Bbox draw tool with shareable URL containing the <code>?bbox=</code> query string.</td></tr>
+        <tr><td>5</td><td><code>05_legend_filter.png</code></td><td>Category &ge; III filter applied via the legend.</td></tr>
+        <tr><td>6</td><td><code>05_anomaly_raw.png</code></td><td>Raw anomaly tile (currently the only checked-in capture).</td></tr>
+        <tr><td>7</td><td><code>06_csv_download.png</code></td><td><code>curl /api/events.csv | head</code> — CSV streaming endpoint.</td></tr>
+        <tr><td>8</td><td><code>07_swagger.png</code></td><td>Swagger UI at <code>/api/docs</code> showing 14 documented paths.</td></tr>
+        <tr><td>9</td><td><code>08_qgis.png</code></td><td>QGIS pulling <code>mhw-events</code> via OGC API &mdash; Features 1.0.</td></tr>
+      </tbody>
+    </table>
+    <p class="missing">Files not yet captured will 404 until release; capture is
+       tracked against the 2026-04-29 deadline in the FSTP Gantt.</p>
+  </body>
+</html>

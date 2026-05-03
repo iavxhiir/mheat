@@ -1,0 +1,204 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/edito-project/mheat
+  tag: "0.4.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+  hosts:
+    - host: mheat.edito.example
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  limits:
+    cpu: "4"
+    memory: "16Gi"
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 15Gi
+  mountPath: /data/cache
+
+env:
+  DEMO_MODE: "false"
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"
+  CORS_ORIGINS: "https://mheat.edito.example"
+  CACHE_DIR: "/data/cache"
+  ZARR_STORE: "/data/cache/sst.zarr"
+  BBOX: "-6.0,30.0,36.5,46.0"
+  CLIM_START: "1991"
+  CLIM_END: "2020"
+  # Set METRICS_ENABLED=true to expose /api/metrics. `serviceMonitor.enabled`
+  # below (with prometheus-operator installed) scrapes the endpoint on the
+  # /api prefix.
+  METRICS_ENABLED: "false"
+
+# -----------------------------------------------------------------------------
+# Live-mode (Copernicus Marine) deployment story.
+#
+# When `live.enabled=true`, the chart:
+#   * forces DEMO_MODE=false on the Deployment,
+#   * mounts the climatology PVC read-only at CLIMATOLOGY_STORE,
+#   * injects CMS credentials from `live.copernicusCredentialsSecret` via envFrom.
+#
+# The Deployment's readiness probe (`/api/readyz`) reports
+# `climatology_present: true` only after the zarr exists on disk — so a live
+# install is "ready" only once the bootstrap Job has finished. See
+# README.md → "Live mode" for the recommended two-step rollout.
+# -----------------------------------------------------------------------------
+live:
+  # Master switch. Off by default so demo installs (the EDITO judging path)
+  # remain the chart's zero-config story.
+  enabled: false
+
+  # Name of an existing Opaque secret with `username` / `password` keys for
+  # Copernicus Marine. Created out-of-band via:
+  #   kubectl create secret generic mheat-cms \
+  #     --from-literal=username=$CMS_USER --from-literal=password=$CMS_PASS
+  # The chart will reference it via `envFrom` so creds never appear in
+  # Deployment spec, ConfigMaps, or `helm get values` output.
+  copernicusCredentialsSecret: mheat-cms
+
+  # Pre-computed Hobday climatology zarr (~500 MB). Populated once by the
+  # bootstrap Job below and then mounted read-only into every replica.
+  climatology:
+    # Path the zarr lives at inside the container. Must match the
+    # CLIMATOLOGY_STORE env var; the chart wires both ends together.
+    mountPath: /data/cache/climatology.zarr
+
+    pvc:
+      # When false, the chart neither creates nor mounts the PVC — useful if
+      # you ship the climatology via a pre-existing volume / OCI artifact.
+      enabled: true
+      # 500 MB observed; 1 GiB leaves headroom for re-bootstraps with a
+      # wider bbox or different CLIM_START/END window.
+      size: 1Gi
+      # Empty string defers to the cluster default StorageClass.
+      storageClass: ""
+      # ReadOnlyMany lets every Deployment replica mount the same zarr,
+      # which is correct since the cube is immutable after bootstrap.
+      # NOTE: many cloud providers (EBS gp3, Azure Disk) only support
+      # RWO — switch to ReadWriteOnce + replicaCount=1 in that case, or
+      # provision an RWX-capable StorageClass (NFS, EFS, CephFS, Longhorn).
+      accessMode: ReadOnlyMany
+
+  # Bootstrap Job: runs `python scripts/bootstrap_climatology.py` once to
+  # populate the climatology PVC. Opt-in because it costs hours of CMS
+  # quota and ~5–20 GB of egress.
+  #
+  # Recommended rollout:
+  #   1) helm install ... --set live.enabled=true --set live.bootstrap.enabled=true
+  #      → Job runs, writes climatology.zarr, exits. Deployment Pod will
+  #        sit in `not ready` (climatology_present=false) until then.
+  #   2) helm upgrade ... --set live.enabled=true --set live.bootstrap.enabled=false
+  #      → removes the Job from the release; Deployment becomes ready as
+  #        soon as it can read the (now-populated) PVC.
+  bootstrap:
+    enabled: false
+    # Forwarded to scripts/bootstrap_climatology.py as --clim-start/--clim-end.
+    # Defaults match config.py and the WMO 1991–2020 normal.
+    clim_start: 1991
+    clim_end: 2020
+    # bbox: empty → script uses its built-in Mediterranean default
+    # (-6.0,30.0,36.5,46.0). Override with a CSV string to re-bootstrap
+    # for a different study area.
+    bbox: ""
+    # The Job downloads ~10–30 GB and reduces it to ~500 MB. The same
+    # resource envelope as the daily-update CronJob is enough — bump if
+    # you widen the bbox or stretch the climatology window.
+    backoffLimit: 1
+    activeDeadlineSeconds: 21600   # 6 h hard cap
+    resources:
+      limits:
+        cpu: "8"
+        memory: "16Gi"
+      requests:
+        cpu: "2"
+        memory: "4Gi"
+
+# Daily update CronJob. The template is rendered only when BOTH
+# `dailyUpdate.enabled=true` AND `live.enabled=true`, so demo installs
+# (the EDITO judging path) never schedule unnecessary jobs. Default is
+# `enabled: true` so any live-mode install gets a daily refresh out of
+# the box — flip to false to opt out.
+# Runs scripts/update_daily.py inside a short-lived container that shares
+# the persistent cache PVC with the main Deployment — the Deployment
+# therefore sees the fresh Zarr cube on its next read without a restart.
+dailyUpdate:
+  enabled: true
+  schedule: "15 2 * * *"          # 02:15 UTC — after the Copernicus NRT release window.
+  demoMode: "false"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  startingDeadlineSeconds: 3600
+  backoffLimit: 2
+  activeDeadlineSeconds: 7200
+  resources:
+    limits:
+      cpu: "8"
+      memory: "16Gi"
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+
+# Grafana dashboard. Ships a ConfigMap labelled so the kube-prometheus-stack
+# sidecar / Grafana Operator auto-imports the dashboard. Paired with
+# `serviceMonitor.enabled=true` for end-to-end observability out of the box.
+grafana:
+  enabled: false
+  # Label the Grafana sidecar looks for. kube-prometheus-stack defaults to
+  # `grafana_dashboard` — override if your operator uses a different
+  # convention.
+  dashboardLabel: grafana_dashboard
+
+# Prometheus Operator integration. Only rendered when
+# `serviceMonitor.enabled=true` — requires `monitoring.coreos.com/v1` CRDs.
+serviceMonitor:
+  enabled: false
+  # Optional: scrape interval and labels for Prometheus Operator to match.
+  interval: "30s"
+  scrapeTimeout: "10s"
+  labels: {}
+  # MetricRelabelings applied by Prometheus before storage — useful to
+  # drop cardinality-expensive labels in shared clusters.
+  metricRelabelings: []
+
+# Copernicus Marine credentials - populate the `mheat-cms` secret.
+cmsSecret:
+  name: mheat-cms
+  usernameKey: username
+  passwordKey: password
+  # If values are supplied here, the secret will be created by the chart.
+  # Leave empty and create the secret out-of-band for production.
+  username: ""
+  password: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

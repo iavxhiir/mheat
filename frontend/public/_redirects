@@ -1,0 +1,10 @@
+# Cloudflare Pages routing rules.
+#
+# Pages cannot proxy /api/* to an external host (api.mediterian-heatwaves.com)
+# via _redirects status=200 — that only works for same-origin destinations.
+# The frontend instead hits the API subdomain directly using VITE_API_BASE
+# baked in at build time, with CORS allow-listed on the backend.
+
+# SPA fallback — every unknown path serves index.html so client-side
+# routing (e.g. /about) keeps working on direct loads + reloads.
+/*  /index.html  200

@@ -1,0 +1,51 @@
+name: live-validation
+
+# Runs the opt-in live Copernicus Marine validation harness. Only on tag
+# releases, and only when the CMS secrets are present (forks / PRs never
+# trigger a live fetch).
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  live-validation:
+    runs-on: ubuntu-latest
+    # Skip on forks — only the canonical owner has the Copernicus secrets.
+    if: ${{ github.event.repository.fork == false }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: System deps (geospatial)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgeos-dev libproj-dev libspatialindex-dev
+
+      - name: Install Python deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run live-validation suite
+        working-directory: backend
+        env:
+          DEMO_MODE: "false"
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.CMS_USER }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.CMS_PASS }}
+        run: pytest tests/test_live_validation.py -v --no-cov
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-validation-log
+          path: backend/.pytest_cache/
+          if-no-files-found: ignore

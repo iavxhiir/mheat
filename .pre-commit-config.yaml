@@ -1,0 +1,58 @@
+# Pre-commit hooks for MHEAT.
+#
+# Install once:   pip install pre-commit && pre-commit install
+# Run on-demand: pre-commit run --all-files
+
+repos:
+  # Hygiene that never hurts.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: "\\.(nc|zarr|parquet|png|tif)$"
+      - id: end-of-file-fixer
+        exclude: "\\.(nc|zarr|parquet|png|tif|ipynb)$"
+      - id: check-yaml
+        # Helm templates are jinja, not valid yaml.
+        exclude: "^charts/.*/templates/"
+      - id: check-json
+        exclude: "^frontend/src/api/generated.ts"
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  # Python: ruff does both lint and format.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        files: "^backend/.*\\.py$"
+      - id: ruff-format
+        files: "^backend/.*\\.py$"
+
+  # Static typing.
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: mypy (backend/app)
+        args: ["--config-file=backend/pyproject.toml"]
+        files: "^backend/app/.*\\.py$"
+        additional_dependencies:
+          - "pydantic==2.9.2"
+          - "pydantic-settings==2.5.2"
+          - "fastapi==0.136.0"
+          - "starlette>=1.0.0"
+
+  # JavaScript / TypeScript.
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npm run lint'
+        language: system
+        files: "^frontend/src/.*\\.(ts|tsx)$"
+        pass_filenames: false

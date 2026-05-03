@@ -1,0 +1,18 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-dashboard
+  labels:
+    app.kubernetes.io/name: mheat
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: grafana-dashboard
+    # Grafana Operator + the kube-prometheus-stack sidecar both discover
+    # ConfigMaps carrying this label; the common contract is "grafana_dashboard=1".
+    {{- with .Values.grafana.dashboardLabel }}
+    {{ . }}: "1"
+    {{- end }}
+data:
+  mheat-overview.json: |-
+    {{- .Files.Get "grafana/mheat-overview.json" | nindent 4 }}
+{{- end }}

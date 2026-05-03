@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mheat"
+version = "0.4.0"
+description = "Mediterranean Marine Heatwave Dashboard (EDITO)"
+readme = "../README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "MHEAT Contributors" }]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --cov=app --cov-report=term-missing --cov-report=json --cov-fail-under=85"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = false
+source = ["app"]
+omit = [
+  "app/telemetry.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+# E/F/W/I = pycodestyle + pyflakes + isort baseline.
+# B    = flake8-bugbear (real-bug heuristics).
+# UP   = pyupgrade (py311 idioms).
+# SIM  = flake8-simplify.
+# RET  = flake8-return.
+# PT   = flake8-pytest-style (tests/).
+# PL   = pylint (refactor-only rules).
+# C4   = flake8-comprehensions.
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RET", "C4", "PT"]
+# E501 — line length handled by formatter; 120 chars ceiling is soft.
+# E402 — module-level imports after sys.path munging (scripts/).
+# E741 — "l" / "I" names used deliberately in numerical code.
+# B008 — FastAPI depends on default=Depends(...) evaluation at import.
+# SIM108 — ternary often harder to read than an if/else in science code.
+# RET504 — explicit "return result" after mutations is clearer.
+# UP038 — `isinstance(x, (A, B))` → `isinstance(x, A | B)` is a runtime
+#         regression: union construction costs more than the tuple. Keep
+#         the tuple form.
+ignore = ["E501", "E402", "E741", "B008", "SIM108", "RET504", "UP038"]
+exclude = ["tests/*"]
+
+[tool.ruff.lint.per-file-ignores]
+# PT rules only make sense inside the test suite.
+"tests/**" = []
+
+[tool.mypy]
+python_version = "3.11"
+files = ["app"]
+# Pragmatic strictness — the scientific deps (xarray, numpy, marineHeatWaves,
+# shapely, rasterio, copernicusmarine) ship partial or no type stubs. We
+# check our own call surface strictly and let third-party returns stay Any.
+ignore_missing_imports = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+warn_return_any = false
+warn_unused_ignores = true
+warn_unreachable = true
+no_implicit_optional = true
+strict_equality = true
+show_error_codes = true
+# Scientific modules that do heavy numpy/xarray gymnastics are exempt from
+# the strict-def pair; still type-checked, just not failure-causing on
+# duck-typed numpy return values.
+[[tool.mypy.overrides]]
+module = ["app.mhw", "app.sst", "app.impact", "app.routers.anomaly"]
+disallow_incomplete_defs = false

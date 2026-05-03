@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: mheat
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mheat
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mheat
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mheat
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            {{- range $k, $v := .Values.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- if .Values.live.enabled }}
+            # Live-mode overrides: force DEMO_MODE off and point the runtime
+            # at the climatology zarr that the bootstrap Job populated.
+            # These come AFTER the .Values.env loop so they win on conflict.
+            - name: DEMO_MODE
+              value: "false"
+            - name: CLIMATOLOGY_STORE
+              value: {{ .Values.live.climatology.mountPath | quote }}
+            {{- end }}
+            - name: COPERNICUSMARINE_SERVICE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cmsSecret.name }}
+                  key: {{ .Values.cmsSecret.usernameKey }}
+                  optional: true
+            - name: COPERNICUSMARINE_SERVICE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cmsSecret.name }}
+                  key: {{ .Values.cmsSecret.passwordKey }}
+                  optional: true
+          {{- if and .Values.live.enabled .Values.live.copernicusCredentialsSecret }}
+          # Live mode: pull *all* CMS env vars (incl. any future additions
+          # like COPERNICUSMARINE_DISABLE_SSL_CHECK) from the operator's
+          # secret in one go. The valueFrom: secretKeyRef pair above remains
+          # for backward compat with the legacy `cmsSecret` block.
+          envFrom:
+            - secretRef:
+                name: {{ .Values.live.copernicusCredentialsSecret }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: cache
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- if and .Values.live.enabled .Values.live.climatology.pvc.enabled }}
+            - name: climatology
+              # Mount the bootstrap-populated zarr read-only — the runtime
+              # only needs to xr.open_zarr() it, never to write. Readiness
+              # probe (/api/readyz) returns climatology_present=true once
+              # this path exists, gating live readiness.
+              mountPath: {{ .Values.live.climatology.mountPath }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: cache
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-cache
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if and .Values.live.enabled .Values.live.climatology.pvc.enabled }}
+        - name: climatology
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-climatology
+            readOnly: true
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- if .Values.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-cache
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+  {{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass }}
+  {{- end }}
+{{- end }}

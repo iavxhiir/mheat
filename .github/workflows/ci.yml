@@ -1,0 +1,296 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: System deps (geospatial)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgeos-dev libproj-dev libspatialindex-dev
+
+      - name: Install Python deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        working-directory: backend
+        run: ruff check app/
+
+      - name: Type-check (mypy)
+        working-directory: backend
+        run: mypy app
+
+      - name: Run tests (with coverage gate)
+        working-directory: backend
+        env:
+          DEMO_MODE: "true"
+        run: pytest
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.json
+          if-no-files-found: ignore
+
+      - name: Reproducibility artefact (demo cube)
+        env:
+          DEMO_MODE: "true"
+        run: |
+          python scripts/reproduce.py --out out/
+          test -s out/manifest.sha256
+          # Six artefacts + a drill-down sample = 7 manifest rows when the
+          # demo cube produces at least one event cluster.
+          COUNT=$(wc -l < out/manifest.sha256)
+          echo "Manifest rows: $COUNT"
+          test "$COUNT" -ge 6
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reproducibility-artefacts
+          path: out/
+          if-no-files-found: error
+
+  # Live-mode (DEMO_MODE=false) regression gate. Runs in parallel to ``backend``
+  # so the canonical demo-mode test runner is unchanged. Uses a synthetic
+  # climatology + a mocked Copernicus SDK (see backend/tests/conftest_live.py)
+  # so the suite never contacts marine.copernicus.eu — the fake ``ci``/``ci``
+  # creds below only exist to satisfy the live-mode credential probe.
+  live-mock:
+    runs-on: ubuntu-latest
+    env:
+      DEMO_MODE: "false"
+      COPERNICUSMARINE_SERVICE_USERNAME: "ci"
+      COPERNICUSMARINE_SERVICE_PASSWORD: "ci"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: System deps (geospatial)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libgeos-dev libproj-dev libspatialindex-dev
+
+      - name: Install Python deps
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run live-mode tests (no coverage gate)
+        working-directory: backend
+        run: |
+          pytest tests/test_live_mode_e2e.py tests/test_anomaly_live.py tests/test_events_live.py tests/test_detect_live.py tests/test_readyz_deep.py -q --no-cov 2>&1 | tee live-mock.log
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-mock-pytest-log
+          path: backend/live-mock.log
+          if-no-files-found: ignore
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install + build
+        working-directory: frontend
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+  unit:
+    needs: [frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+
+      - name: Vitest (unit + coverage)
+        working-directory: frontend
+        run: npx vitest run --coverage
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          if-no-files-found: ignore
+
+  a11y:
+    needs: [frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Axe-core smoke (WCAG 2.1 AA)
+        working-directory: frontend
+        run: npm run test:a11y
+
+  lint-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Hadolint (Dockerfile)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          # DL3008/DL3013 — apt/pip version pinning noise on rolling
+          # Debian stable; we pin the base image digest in place of that.
+          ignore: DL3008,DL3013
+
+      - name: ShellCheck (run.sh + scripts/*.sh)
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: "."
+          ignore_paths: >-
+            node_modules
+            .venv
+            frontend/node_modules
+          check_together: "yes"
+          severity: warning
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: pip-audit (Python deps)
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          # marineHeatWaves is a git-installed scientific library not on PyPI
+          # (https://github.com/ecjoliver/marineHeatWaves). It's tracked
+          # upstream for security — strip it before handing the file to
+          # pip-audit, which can't query VCS-sourced deps.
+          grep -v "git+" backend/requirements.txt > /tmp/req-audit.txt
+          pip-audit --strict -r /tmp/req-audit.txt
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: npm audit (Node deps, HIGH/CRITICAL block)
+        working-directory: frontend
+        run: |
+          npm install --no-audit --no-fund
+          npm audit --omit=dev --audit-level=high
+
+  docker:
+    needs: [backend, frontend, unit]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build (local)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: mheat:ci
+
+      - name: Trivy (image scan — HIGH/CRITICAL block)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: mheat:ci
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: os,library
+
+      - name: Image size guard (< 500 MB uncompressed)
+        run: |
+          SIZE_BYTES=$(docker image inspect mheat:ci --format '{{.Size}}')
+          SIZE_MB=$((SIZE_BYTES / 1024 / 1024))
+          echo "Image size: ${SIZE_MB} MB"
+          if [ "$SIZE_MB" -gt 500 ]; then
+            echo "::error::Image exceeds 500 MB (got ${SIZE_MB} MB)"
+            exit 1
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:${{ github.sha }}

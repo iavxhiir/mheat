@@ -1,0 +1,18 @@
+apiVersion: v2
+name: mheat
+description: MHEAT - Mediterranean Marine Heatwave Dashboard (EDITO)
+type: application
+version: 0.4.0
+appVersion: "0.4.0"
+home: https://github.com/edito-project/mheat
+icon: https://raw.githubusercontent.com/edito-project/mheat/main/frontend/public/favicon.svg
+maintainers:
+  - name: MHEAT Contributors
+sources:
+  - https://github.com/edito-project/mheat
+keywords:
+  - mhw
+  - marine-heatwave
+  - copernicus
+  - mediterranean
+  - edito

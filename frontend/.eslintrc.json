@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": { "jsx": true }
+  },
+  "plugins": ["jsx-a11y", "react-hooks"],
+  "extends": ["plugin:jsx-a11y/recommended", "plugin:react-hooks/recommended"],
+  "settings": {
+    "react": { "version": "18" }
+  },
+  "env": {
+    "browser": true,
+    "es2022": true
+  }
+}
