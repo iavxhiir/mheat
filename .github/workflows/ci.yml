@@ -43,7 +43,7 @@ jobs:
           DEMO_MODE: "true"
         run: pytest
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: backend-coverage
           path: backend/coverage.json
@@ -61,7 +61,7 @@ jobs:
           echo "Manifest rows: $COUNT"
           test "$COUNT" -ge 6
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: reproducibility-artefacts
           path: out/
@@ -103,7 +103,7 @@ jobs:
         run: |
           pytest tests/test_live_mode_e2e.py tests/test_anomaly_live.py tests/test_events_live.py tests/test_detect_live.py tests/test_readyz_deep.py -q --no-cov 2>&1 | tee live-mock.log
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: live-mock-pytest-log
@@ -149,7 +149,7 @@ jobs:
         working-directory: frontend
         run: npx vitest run --coverage
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: frontend-coverage
           path: frontend/coverage/
