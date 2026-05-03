@@ -84,7 +84,7 @@ jobs:
         run: python scripts/reproduce.py
 
       - name: Create GitHub Release + attach artefacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: MHEAT ${{ steps.ver.outputs.version }}
           body: |
