@@ -45,7 +45,7 @@ def build_collection(time_interval: list[list[str | None]] | None = None,
             "and Adriatic, computed using the Hobday et al. (2016) method on "
             "Copernicus Marine SST products."
         ),
-        "license": "MIT",
+        "license": "CC-BY-4.0",
         "extent": {
             "spatial": {"bbox": extent_spatial},
             "temporal": {"interval": extent_temporal},

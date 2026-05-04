@@ -155,7 +155,7 @@ def create_app() -> FastAPI:
         ),
         contact={
             "name": "MHEAT maintainers",
-            "url": "https://github.com/your-org/mheat",
+            "url": "https://github.com/iavxhiir/mheat",
         },
         license_info={
             "name": "MIT",
