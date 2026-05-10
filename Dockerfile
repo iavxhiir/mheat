@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------
 # Stage 1 — build the Vite/React frontend
 # ------------------------------------------------------------------
-FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 AS frontend-build
+FROM node:26-alpine@sha256:e71ac5e964b9201072425d59d2e876359efa25dc96bb1768cb73295728d6e4ea AS frontend-build
 WORKDIR /fe
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm install --no-audit --no-fund
