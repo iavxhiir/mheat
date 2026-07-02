@@ -293,6 +293,7 @@ class SSTProvider:
         """Fetch ``[start, end]`` from CMS and merge it into the on-disk Zarr."""
         # Record the pull start so /api/freshness can advertise progress.
         from datetime import datetime as _dt
+
         from . import sst as _sst_mod  # late import to avoid module-self-cycle issues
         _sst_mod._LIVE_PULL_STATE.update({
             "in_progress": True,

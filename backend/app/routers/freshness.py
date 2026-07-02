@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
@@ -50,7 +50,7 @@ def freshness(sst: SSTProvider = Depends(sst_dep)) -> dict[str, Any]:
     if isinstance(last_success_iso, str):
         try:
             ts = datetime.fromisoformat(last_success_iso.replace("Z", "+00:00"))
-            age_seconds = int((datetime.now(timezone.utc) - ts).total_seconds())
+            age_seconds = int((datetime.now(UTC) - ts).total_seconds())
         except ValueError:
             age_seconds = None
 
@@ -135,7 +135,7 @@ async def prefetch(
         "status": "queued",
         "start": str(start),
         "end": str(end),
-        "queued_at": datetime.now(timezone.utc).isoformat(),
+        "queued_at": datetime.now(UTC).isoformat(),
     }
 
 

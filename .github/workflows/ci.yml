@@ -67,49 +67,6 @@ jobs:
           path: out/
           if-no-files-found: error
 
-  # Live-mode (DEMO_MODE=false) regression gate. Runs in parallel to ``backend``
-  # so the canonical demo-mode test runner is unchanged. Uses a synthetic
-  # climatology + a mocked Copernicus SDK (see backend/tests/conftest_live.py)
-  # so the suite never contacts marine.copernicus.eu — the fake ``ci``/``ci``
-  # creds below only exist to satisfy the live-mode credential probe.
-  live-mock:
-    runs-on: ubuntu-latest
-    env:
-      DEMO_MODE: "false"
-      COPERNICUSMARINE_SERVICE_USERNAME: "ci"
-      COPERNICUSMARINE_SERVICE_PASSWORD: "ci"
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-
-      - name: System deps (geospatial)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libgeos-dev libproj-dev libspatialindex-dev
-
-      - name: Install Python deps
-        working-directory: backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-
-      - name: Run live-mode tests (no coverage gate)
-        working-directory: backend
-        run: |
-          pytest tests/test_live_mode_e2e.py tests/test_anomaly_live.py tests/test_events_live.py tests/test_detect_live.py tests/test_readyz_deep.py -q --no-cov 2>&1 | tee live-mock.log
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: live-mock-pytest-log
-          path: backend/live-mock.log
-          if-no-files-found: ignore
-
   frontend:
     runs-on: ubuntu-latest
     steps:

@@ -17,7 +17,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 import numpy as np
@@ -85,8 +85,8 @@ class MhwEvent:
         # the request response time; combined with the cube's daily
         # granularity, an insurer can compute "event_start_t + 24 h
         # publishing SLA" parametric triggers.
-        from datetime import datetime, timezone
-        published_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+        from datetime import datetime
+        published_at = datetime.now(UTC).replace(microsecond=0).isoformat()
         return {
             "type": "Feature",
             "id": self.event_id,

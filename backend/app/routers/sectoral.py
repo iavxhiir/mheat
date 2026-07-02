@@ -30,7 +30,8 @@ import logging
 from datetime import date, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Path as PathParam, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import Path as PathParam
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, field_validator
 
@@ -278,7 +279,7 @@ def mpa_events(
     try:
         from shapely.geometry import shape
     except ImportError:  # pragma: no cover
-        shape = None  # type: ignore[assignment]
+        shape = None
 
     def _intersects_mpa(event_geom: dict[str, Any]) -> bool:
         if shape is None:

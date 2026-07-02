@@ -34,6 +34,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# --- TS/Vite compiled outputs alongside the .ts sources ---
+frontend/test-results/
+frontend/*.tsbuildinfo
+frontend/tsconfig*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+frontend/vitest.config.js
+frontend/vitest.config.d.ts
+
 # --- Data / cache / local run artefacts ---
 data/
 cache/

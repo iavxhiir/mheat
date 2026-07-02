@@ -100,7 +100,7 @@ def _first_real_sitecode() -> str:
     """Pick a SITECODE that's actually in the bundled MPA fixture."""
     from pathlib import Path
     fixture = Path(__file__).parent.parent / "app" / "fixtures" / "overlays" / "mpa.json"
-    data = json.loads(fixture.read_text())
+    data = json.loads(fixture.read_text(encoding="utf-8"))
     return str(data["features"][0]["properties"]["SITECODE"])
 
 
