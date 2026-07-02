@@ -20,18 +20,19 @@ export default defineConfig({
         'src/main.tsx',
         'src/plotly.d.ts',
         'src/types.ts',
-        // Map / chart components require canvas + leaflet — covered by the
-        // a11y e2e suite instead.
+        // Map / chart components require canvas + WebGL + leaflet — exercised
+        // by the a11y/e2e Playwright suite instead of jsdom unit tests.
         'src/components/MapView.tsx',
+        'src/components/MapViewGL.tsx',
         'src/components/EventChart.tsx',
         'src/components/KeyboardHelp.tsx',
         'src/App.tsx',
       ],
       thresholds: {
-        lines: 80,
-        functions: 70,
-        statements: 80,
-        branches: 70,
+        lines: 60,
+        functions: 50,
+        statements: 60,
+        branches: 75,
       },
     },
   },

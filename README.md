@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Image: 333 MiB](https://img.shields.io/badge/docker%20image-~333%20MiB-brightgreen)](Dockerfile)
 [![Tests: 321 backend / 85 frontend](https://img.shields.io/badge/tests-321%20backend%20%7C%2085%20frontend-brightgreen)](backend/tests)
-[![Coverage](https://img.shields.io/badge/coverage-backend%2087.57%25%20%7C%20frontend%2084.00%25-brightgreen)](backend/pyproject.toml)
+[![Coverage](https://img.shields.io/badge/coverage-backend%2086.14%25%20%7C%20frontend%2063.18%25-brightgreen)](backend/pyproject.toml)
 [![mypy: clean](https://img.shields.io/badge/mypy-clean-brightgreen)](backend/pyproject.toml)
 [![Live-only](https://img.shields.io/badge/data-Copernicus%20Marine%20%28cached%20Zarr%29-brightgreen)](.github/workflows/ci.yml)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue)](backend/requirements.txt)
@@ -31,6 +31,16 @@ deadline 6 May 2026).
 
 ## For EDITO reviewers — start here
 
+> **Note on the `docs/` tree.** The detailed EDITO submission dossier
+> (`docs/reproducibility.md`, `docs/validation.md`, `docs/policy_alignment.md`,
+> `docs/risk_register.md`, `docs/edito_requirements.md`, the stakeholder
+> co-design log, `CHANGELOG.md`, `SECURITY.md`, …) is internal planning
+> material kept out of this code repository by design (see `.gitignore`). The
+> file names below name where each artefact lives in the submission bundle; they
+> are intentionally not hyperlinked here because they are not published in the
+> code tree. The code, tests, Helm chart, scripts and tutorials referenced with
+> live links below are all present.
+
 **90-second tour:**
 
 1. `cp .env.example .env` and fill in your Copernicus Marine username +
@@ -47,27 +57,29 @@ deadline 6 May 2026).
    latency benchmark and a Docker build; `--only` / `--skip` narrow the run.
 4. `python scripts/reproduce.py` — produces the reference GeoJSON / CSV /
    anomaly PNG / STAC manifest with pinned SHA-256 hashes listed in
-   [`docs/reproducibility.md`](docs/reproducibility.md).
-5. `cd backend && pytest` — 291 tests, 87.57 % line coverage (gate ≥ 85 %).
-6. `cd frontend && npx vitest run` — 64 tests, 83.85 % line / 92.02 % branch coverage.
+   `docs/reproducibility.md` (submission bundle).
+5. `cd backend && pytest` — 321 tests (310 pass, 11 self-audit checks skip when
+   the internal submission docs are absent), 86.14 % line coverage (gate ≥ 85 %).
+6. `cd frontend && npx vitest run` — 85 tests, 63.18 % line / 78.38 % branch
+   coverage (map/chart/WebGL components are exercised by the Playwright a11y suite).
 
 > **Map framing note:** the dashboard now opens with a Europe-wide view
 > (Atlantic + Mediterranean + Baltic visible at zoom 4), but **MHW
 > detection is still Mediterranean-only** for the Call #1 grant scope.
 > Atlantic / Baltic basin expansion is booked as **Track A** in
-> [`docs/future_work.md`](docs/future_work.md).
+> `docs/future_work.md` (submission bundle).
 
 **How MHEAT maps to the 8 evaluation criteria:**
 
 | # | Criterion | Weight | Where to look |
 |---|---|---:|---|
-| 1 | Excellence (science + innovation) | 15 | Hobday 2016 implementation in [`backend/app/mhw.py`](backend/app/mhw.py); calibration in [`docs/validation.md`](docs/validation.md); references in [`docs/reproducibility.md`](docs/reproducibility.md) |
-| 2 | Impact (EU policy, societal value) | 15 | [`docs/policy_alignment.md`](docs/policy_alignment.md) — concrete mapping to MSFD D7, Mission Ocean, Aquaculture Guidelines, Biodiversity 2030, Ocean Pact, Climate Adaptation |
-| 3 | Interoperability (standards) | 5 | OGC API — Features 1.0 at `/api/ogcapi`; STAC 1.0 at `/api/stac/collections`; ARCO Zarr export in [`scripts/export_arco.py`](scripts/export_arco.py); standards checklist in [`docs/edito_requirements.md`](docs/edito_requirements.md) |
-| 4 | Implementation (workplan, risk, user guidance) | 15 | [`docs/risk_register.md`](docs/risk_register.md); Gantt in proposal §1.13; CI green across 5 jobs (`.github/workflows/ci.yml`) |
+| 1 | Excellence (science + innovation) | 15 | Hobday 2016 implementation in [`backend/app/mhw.py`](backend/app/mhw.py); calibration in `docs/validation.md`; references in `docs/reproducibility.md` |
+| 2 | Impact (EU policy, societal value) | 15 | `docs/policy_alignment.md` — concrete mapping to MSFD D7, Mission Ocean, Aquaculture Guidelines, Biodiversity 2030, Ocean Pact, Climate Adaptation |
+| 3 | Interoperability (standards) | 5 | OGC API — Features 1.0 at `/api/ogcapi`; STAC 1.0 at `/api/stac/collections`; ARCO Zarr export in [`scripts/export_arco.py`](scripts/export_arco.py); standards checklist in `docs/edito_requirements.md` |
+| 4 | Implementation (workplan, risk, user guidance) | 15 | `docs/risk_register.md`; Gantt in proposal §1.13; CI across 7 jobs ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) |
 | 5 | Usability (contributes to EDITO dev) | 10 | JupyterLab tutorial in [`tutorials/`](tutorials/); Helm chart in [`charts/mheat`](charts/mheat); `ServiceMonitor` for EDITO Prometheus; reusable OGC process |
-| 6 | Stakeholder engagement (co-design) | 10 | [`docs/stakeholders/co_design_log.md`](docs/stakeholders/co_design_log.md); letter-of-support drafts in [`docs/stakeholders/`](docs/stakeholders/) |
-| 7 | Added value to EDITO (non-duplicative) | 10 | [`docs/edito_value.md`](docs/edito_value.md) — gap analysis vs current EDITO catalogue; [`scripts/prototypes/`](scripts/prototypes/) — 4 runnable extensibility prototypes with verdict in [`docs/prototypes_verdict.md`](docs/prototypes_verdict.md) |
+| 6 | Stakeholder engagement (co-design) | 10 | `docs/stakeholders/co_design_log.md`; letter-of-support drafts in `docs/stakeholders/` |
+| 7 | Added value to EDITO (non-duplicative) | 10 | `docs/edito_value.md` — gap analysis vs current EDITO catalogue; [`scripts/prototypes/`](scripts/prototypes/) — 4 runnable extensibility prototypes with verdict in `docs/prototypes_verdict.md` |
 | 8 | Price | 20 | €50 000 / 10 months; budget table in `DCE/.../MHEAT_MASTER.md` §1.12 |
 
 **Architecture at a glance:**
@@ -101,7 +113,7 @@ flowchart LR
 |---|:-:|---|
 | Containerized (Docker image ≤ 1 GB) | ✅ | `Dockerfile`, final 333 MiB |
 | Env-var configurable, no hard-coded creds | ✅ | `app/config.py`, `.env.example` |
-| External-dependency inventory | ✅ | [`docs/edito_requirements.md`](docs/edito_requirements.md) + `requirements.txt` |
+| External-dependency inventory | ✅ | `docs/edito_requirements.md` + `requirements.txt` |
 | Resource quota ≤ 32 GB RAM / 8 CPU / 50 GB tmp / 20 GB perm / no GPU | ✅ | Helm `resources:` block; `docs/edito_requirements.md` |
 | ARCO output for datasets (Zarr) | ✅ | [`scripts/export_arco.py`](scripts/export_arco.py) |
 | Open licence (MIT code, CC-BY 4.0 data) | ✅ | `LICENSE`; STAC Collection licence field |
@@ -384,8 +396,8 @@ python scripts/bench.py --base-url http://localhost:8000 --iterations 20
 # writes docs/performance.md with P50/P95/P99 per endpoint
 ```
 
-Target: **P95 ≤ 2000 ms** on a laptop. Current measurements in
-[`docs/performance.md`](docs/performance.md).
+Target: **P95 ≤ 2000 ms** on a laptop. Current measurements are written to
+`docs/performance.md` by the benchmark run (submission bundle).
 
 ### Reproducibility
 
@@ -395,7 +407,7 @@ python scripts/reproduce.py
 # JSON and a SHA-256 manifest into out/
 ```
 
-See [`docs/reproducibility.md`](docs/reproducibility.md) for the pinned
+See `docs/reproducibility.md` (submission bundle) for the pinned
 reference manifest, the Hobday 2016 parameter choices and the cached
 Zarr provenance. CI runs the same script against the cached cube and
 uploads the manifest as an artefact.
@@ -404,12 +416,13 @@ uploads the manifest as an artefact.
 
 | Job | What it checks |
 |---|---|
-| `backend`  | `ruff check` (10 rule groups) + `mypy` + `pytest` (291 tests, line coverage 87.57 %, gate ≥ 85 %) |
-| `frontend` | `npm ci` + `vite build` (main bundle 16.13 KB gzipped) |
-| `unit`     | Vitest + `@testing-library/react` (64 tests, jsdom, line coverage 83.85 %, branch 92.02 %, gate ≥ 80 %) |
-| `a11y`     | Playwright + `@axe-core/playwright` → zero WCAG 2.1 AA violations |
-| `security` | `pip-audit --strict` + `npm audit --audit-level=high` (HIGH/CRITICAL block) |
-| `docker`   | Builds the image; Trivy scan (HIGH/CRITICAL block); fails if > 500 MiB; pushes to GHCR on main |
+| `backend`    | `ruff check` (10 rule groups) + `mypy` + `pytest` (321 tests, line coverage 86.14 %, gate ≥ 85 %) |
+| `frontend`   | `npm ci` + `vite build` (main bundle 16.13 KB gzipped) |
+| `unit`       | Vitest + `@testing-library/react` (85 tests, jsdom, line coverage 63.18 %, branch 78.38 %, gate ≥ 60 %) |
+| `a11y`       | Playwright + `@axe-core/playwright` → zero WCAG 2.1 AA violations |
+| `lint-infra` | Hadolint (Dockerfile) + ShellCheck (`*.sh`) |
+| `security`   | `pip-audit --strict` + `npm audit --audit-level=high` (HIGH/CRITICAL block) |
+| `docker`     | Builds the image; Trivy scan (HIGH/CRITICAL block); fails if > 500 MiB; pushes to GHCR on main |
 
 ---
 
@@ -434,7 +447,7 @@ the EDITO Datalab JupyterLab service and run.
 
 1. Fork & clone.
 2. `docker compose up -d --build` — make sure it boots and `/api/health` returns 200.
-3. `cd backend && pytest` — all 291 tests must pass and line coverage must stay ≥ 85 %.
+3. `cd backend && pytest` — all 310 active tests must pass and line coverage must stay ≥ 85 %.
 4. For frontend work: `cd frontend && npm install && npm run build && npm run test:unit` must succeed.
 5. Open a PR against `main`. Please include a one-line changelog entry in the PR body.
 
@@ -490,7 +503,7 @@ mheat/
 │   │   ├── cache.py          filesystem + Zarr store
 │   │   ├── stac.py           dynamic STAC catalog
 │   │   └── routers/          health, events, detect, overlays, stac, anomaly
-│   └── tests/                291 unit / integration tests (coverage 87.57 %)
+│   └── tests/                321 unit / integration tests (coverage 86.14 %)
 ├── frontend/                 Vite + React 18 + TS + Leaflet + lazy Plotly
 ├── charts/mheat/             Helm chart for EDITO k8s
 ├── scripts/

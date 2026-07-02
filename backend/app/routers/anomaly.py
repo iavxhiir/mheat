@@ -99,6 +99,7 @@ def _land_mask_for_grid(h: int, w: int) -> np.ndarray:
         return cached
     try:
         from global_land_mask import globe
+
         from ..config import Settings
         bbox = Settings().bbox_tuple  # (lon_min, lat_min, lon_max, lat_max)
         # Use cell-edge extent (matches the frontend MapLibre image corners)
