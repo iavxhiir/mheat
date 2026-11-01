@@ -15,7 +15,7 @@ jobs:
     # Skip on forks — only the canonical owner has the Copernicus secrets.
     if: ${{ github.event.repository.fork == false }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Python
         uses: actions/setup-python@v5
