@@ -14,7 +14,7 @@
     "gen:api": "openapi-typescript http://localhost:8000/api/openapi.json -o src/api/generated.ts"
   },
   "dependencies": {
-    "@mapbox/mapbox-gl-draw": "^1.5.1",
+    "@mapbox/mapbox-gl-draw": "^1.5.2",
     "leaflet": "1.9.4",
     "maplibre-gl": "^4.7.1",
     "plotly.js-dist-min": "2.35.2",
